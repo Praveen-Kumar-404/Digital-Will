@@ -142,6 +142,12 @@
         <p id="status" style="margin-top: 15px; color: #bbb;">Status: Not connected</p>
     </div>
 
+
+	<div id="willDetails" style="margin-top: 20px; padding: 20px; background: rgba(255,255,255,0.1); border-radius: 10px; max-width: 400px; margin-left: auto; margin-right: auto;">
+    		<p>Status: No will details fetched yet.</p>
+	</div>
+
+	
     <!-- Footer -->
     <div class="footer">
         <p>Developed by <a href="https://github.com/Praveen-Kumar-404" target="_blank">Praveen Kumar</a></p>
@@ -225,14 +231,37 @@
         }
 
         async function checkWill() {
-            if (!contract) return alert("Connect wallet first!");
-            try {
-                let willDetails = await contract.methods.getWillDetails().call();
-                alert("Will Details: " + JSON.stringify(willDetails));
-            } catch (error) {
-                alert("Error fetching will details!");
-            }
-        }
+    if (!contract) return alert("Connect wallet first!");
+    
+    try {
+        let willDetails = await contract.methods.getWillDetails().call();
+        
+        // Fake data for testing
+        willDetails = {
+            owner: "Praveen Kumar",
+            assets: [
+                { type: "ETH", amount: "1.2" },
+                { type: "USDT", amount: "300" },
+                { type: "NFT", name: "CryptoPunk #404" }
+            ],
+            beneficiary: "0xAbC123456789DEF"  // Fake wallet address
+        };
+
+        // Formatting and displaying on the page
+        document.getElementById("willDetails").innerHTML = `
+            <h3>Will Details</h3>
+            <p><strong>Owner:</strong> ${willDetails.owner}</p>
+            <p><strong>Beneficiary:</strong> ${willDetails.beneficiary}</p>
+            <h4>Assets:</h4>
+            <ul>
+                ${willDetails.assets.map(asset => `<li>${asset.amount} ${asset.type} (${asset.name || ""})</li>`).join("")}
+            </ul>
+        `;
+    } catch (error) {
+        document.getElementById("willDetails").innerHTML = "<p style='color:red;'>Error fetching will details!</p>";
+    }
+}
+
 
         async function executeWill() {
             if (!contract) return alert("Connect wallet first!");
