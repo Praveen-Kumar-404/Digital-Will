@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Will - Web3</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.7.4/web3.min.js"></script>
+    <style>
+        /* General Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Poppins", sans-serif;
+        }
+        body {
+            background: #0d0d0d;
+            color: #fff;
+            text-align: center;
+            overflow-x: hidden;
+        }
+
+        /* Navbar */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 50px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+        .navbar h1 {
+            font-size: 24px;
+            color: #bb86fc;
+        }
+        .nav-links a {
+            margin: 0 15px;
+            font-size: 16px;
+            color: #bbb;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+        .nav-links a:hover {
+            color: #fff;
+        }
+
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .hero h1 {
+            font-size: 50px;
+            font-weight: 700;
+            color: #bb86fc;
+            margin-bottom: 15px;
+            animation: fadeIn 1.5s ease-in-out;
+        }
+        .hero p {
+            font-size: 18px;
+            color: #ddd;
+            max-width: 600px;
+            line-height: 1.6;
+            animation: fadeIn 2s ease-in-out;
+        }
+
+        /* Animated Button */
+        .connect-btn {
+            margin-top: 30px;
+            padding: 12px 25px;
+            font-size: 18px;
+            background: linear-gradient(45deg, #6200ea, #bb86fc);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 4px 15px rgba(187, 134, 252, 0.4);
+        }
+        .connect-btn:hover {
+            background: linear-gradient(45deg, #bb86fc, #6200ea);
+            box-shadow: 0 6px 20px rgba(187, 134, 252, 0.6);
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 50px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            font-size: 14px;
+            color: #bbb;
+        }
+        .footer a {
+            color: #bb86fc;
+            text-decoration: none;
+        }
+        .footer a:hover {
+            color: #fff;
+        }
+
+        /* Keyframes */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <div class="navbar">
+        <h1>Digital Will - Web3</h1>
+        <div class="nav-links">
+            <a href="#">Home</a>
+            <a href="#">How It Works</a>
+            <a href="#">About</a>
+            <a href="#">Contact</a>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <div class="hero">
+        <h1>Secure Your Digital Legacy</h1>
+        <p>Ensure your assets are seamlessly transferred with blockchain-powered Digital Will.</p>
+        <button class="connect-btn" onclick="connectWallet()">🔗 Connect Wallet</button>
+        <p id="status" style="margin-top: 15px; color: #bbb;">Status: Not connected</p>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>Developed by <a href="https://github.com/Praveen-Kumar-404" target="_blank">Praveen Kumar</a></p>
+        <p>Deployed on Edu Chain: <a href="https://edu-chain-explorer.io/address/0x9750E8A9670F6fEDD44F67930Dff74f7C7748fA0" target="_blank">0x9750E8A9670F6fEDD44F67930Dff74f7C7748fA0</a></p>
+    </div>
+
+    <script>
+        let web3;
+        let contractAddress = "0x9750E8A9670F6fEDD44F67930Dff74f7C7748fA0";
+        let contractABI = [];  // Add your contract's ABI here
+        let contract;
+        let accounts = [];
+
+        async function connectWallet() {
+            if (window.ethereum) {
+                web3 = new Web3(window.ethereum);
+                try {
+                    accounts = await ethereum.request({ method: "eth_requestAccounts" });
+                    contract = new web3.eth.Contract(contractABI, contractAddress);
+                    document.getElementById("status").innerText = "Connected: " + accounts[0];
+                } catch (error) {
+                    document.getElementById("status").innerText = "Connection failed!";
+                }
+            } else {
+                alert("Please install MetaMask!");
+            }
+        }
+
+        async function checkWill() {
+            if (!contract) return alert("Connect wallet first!");
+            try {
+                let willDetails = await contract.methods.getWillDetails().call();
+                alert("Will Details: " + JSON.stringify(willDetails));
+            } catch (error) {
+                alert("Error fetching will details!");
+            }
+        }
+
+        async function executeWill() {
+            if (!contract) return alert("Connect wallet first!");
+            try {
+                await contract.methods.executeWill().send({ from: accounts[0] });
+                alert("Will executed successfully!");
+            } catch (error) {
+                alert("Error executing will!");
+            }
+        }
+    </script>
+
+</body>
+</html>
