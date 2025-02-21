@@ -243,6 +243,66 @@
                 alert("Error executing will!");
             }
         }
+
+
+
+
+
+
+
+	    async function connectWallet() {
+        if (window.ethereum) {
+            web3 = new Web3(window.ethereum);
+            try {
+                accounts = await ethereum.request({ method: "eth_requestAccounts" });
+                contract = new web3.eth.Contract(contractABI, contractAddress);
+                document.getElementById("status").innerText = "Connected: " + accounts[0];
+            } catch (error) {
+                document.getElementById("status").innerText = "Connection failed!";
+            }
+        } else {
+            alert("Please install MetaMask!");
+        }
+    }
+
+    async function checkWill() {
+        if (!contract) return alert("Connect wallet first!");
+        
+        // Fake Will Data (Using Your Details)
+        let fakeWill = {
+            owner: "Praveen Kumar",
+            wallet: "0x9750E8A9670F6fEDD44F67930Dff74f7C7748fA0",
+            beneficiary: "0xABCD1234EF5678GH9012IJ3456KL7890MNOPQRST",  // Fake Beneficiary
+            assets: [
+                { type: "ETH", amount: "1.2 ETH" },
+                { type: "Token", amount: "300 USDT" },
+                { type: "NFT", amount: "CryptoPunk #404" }
+            ],
+            status: "Pending Execution"
+        };
+
+        let willMessage = `
+            👤 **Owner:** ${fakeWill.owner}
+            \n🔗 **Wallet:** ${fakeWill.wallet}
+            \n👤 **Beneficiary:** ${fakeWill.beneficiary}
+            \n💰 **Assets:**
+            \n- ${fakeWill.assets[0].amount}
+            \n- ${fakeWill.assets[1].amount}
+            \n- ${fakeWill.assets[2].amount}
+            \n✅ **Status:** ${fakeWill.status}
+        `;
+
+        alert(willMessage);
+    }
+
+    async function executeWill() {
+        if (!contract) return alert("Connect wallet first!");
+        
+        // Fake Execution Response
+        setTimeout(() => {
+            alert("✅ Will executed successfully! The assets have been securely transferred to the beneficiary.");
+        }, 2000); // Simulating a delay for execution
+    }
     </script>
 </body>
 </html>
