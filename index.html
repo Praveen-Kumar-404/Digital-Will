@@ -156,182 +156,93 @@
 
     <script>
         let web3;
-        let contractAddress = "0x9750E8A9670F6fEDD44F67930Dff74f7C7748fA0";
-        let contractABI = [
-	{
-		"inputs": [],
-		"name": "beneficiary",
-		"outputs": [
-			{
-				"internalType": "address payable",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "claimInheritance",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "deposit",
-		"outputs": [],
-		"stateMutability": "payable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "owner",
-		"outputs": [
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "releaseTime",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	}
-];  // Add your contract's ABI here
-        let contract;
-        let accounts = [];
+let contractAddress = "0x9750E8A9670F6fEDD44F67930Dff74f7C7748fA0";
+let contractABI = [
+    {
+        "inputs": [],
+        "name": "beneficiary",
+        "outputs": [{"internalType": "address payable", "name": "", "type": "address"}],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "claimInheritance",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "deposit",
+        "outputs": [],
+        "stateMutability": "payable",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "owner",
+        "outputs": [{"internalType": "address", "name": "", "type": "address"}],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "releaseTime",
+        "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+        "stateMutability": "view",
+        "type": "function"
+    }
+];  
 
-        async function connectWallet() {
-            if (window.ethereum) {
-                web3 = new Web3(window.ethereum);
-                try {
-                    accounts = await ethereum.request({ method: "eth_requestAccounts" });
-                    contract = new web3.eth.Contract(contractABI, contractAddress);
-                    document.getElementById("status").innerText = "Connected: " + accounts[0];
-                } catch (error) {
-                    document.getElementById("status").innerText = "Connection failed!";
-                }
-            } else {
-                alert("Please install MetaMask!");
-            }
+let contract;
+let accounts = [];
+
+async function connectWallet() {
+    if (window.ethereum) {
+        web3 = new Web3(window.ethereum);
+        try {
+            accounts = await ethereum.request({ method: "eth_requestAccounts" });
+            contract = new web3.eth.Contract(contractABI, contractAddress);
+            document.getElementById("status").innerText = "Connected: " + accounts[0];
+        } catch (error) {
+            document.getElementById("status").innerText = "Connection failed!";
         }
+    } else {
+        alert("Please install MetaMask!");
+    }
+}
 
-        async function checkWill() {
+async function checkWill() {
     if (!contract) return alert("Connect wallet first!");
-    
-    try {
-        let willDetails = await contract.methods.getWillDetails().call();
-        
-        // Fake data for testing
-        willDetails = {
-            owner: "Praveen Kumar",
-            assets: [
-                { type: "ETH", amount: "1.2" },
-                { type: "USDT", amount: "300" },
-                { type: "NFT", name: "CryptoPunk #404" }
-            ],
-            beneficiary: "0xAbC123456789DEF"  // Fake wallet address
-        };
 
-        // Formatting and displaying on the page
+    try {
+        let owner = await contract.methods.owner().call();
+        let beneficiary = await contract.methods.beneficiary().call();
+        let releaseTime = await contract.methods.releaseTime().call();
+
         document.getElementById("willDetails").innerHTML = `
             <h3>Will Details</h3>
-            <p><strong>Owner:</strong> ${willDetails.owner}</p>
-            <p><strong>Beneficiary:</strong> ${willDetails.beneficiary}</p>
-            <h4>Assets:</h4>
-            <ul>
-                ${willDetails.assets.map(asset => `<li>${asset.amount} ${asset.type} (${asset.name || ""})</li>`).join("")}
-            </ul>
+            <p><strong>Owner:</strong> ${owner}</p>
+            <p><strong>Beneficiary:</strong> ${beneficiary}</p>
+            <p><strong>Release Time:</strong> ${new Date(releaseTime * 1000).toLocaleString()}</p>
         `;
     } catch (error) {
         document.getElementById("willDetails").innerHTML = "<p style='color:red;'>Error fetching will details!</p>";
     }
 }
 
+async function executeWill() {
+    if (!contract) return alert("Connect wallet first!");
 
-        async function executeWill() {
-            if (!contract) return alert("Connect wallet first!");
-            try {
-                await contract.methods.executeWill().send({ from: accounts[0] });
-                alert("Will executed successfully!");
-            } catch (error) {
-                alert("Error executing will!");
-            }
-        }
-
-
-
-
-
-
-
-	    async function connectWallet() {
-        if (window.ethereum) {
-            web3 = new Web3(window.ethereum);
-            try {
-                accounts = await ethereum.request({ method: "eth_requestAccounts" });
-                contract = new web3.eth.Contract(contractABI, contractAddress);
-                document.getElementById("status").innerText = "Connected: " + accounts[0];
-            } catch (error) {
-                document.getElementById("status").innerText = "Connection failed!";
-            }
-        } else {
-            alert("Please install MetaMask!");
-        }
+    try {
+        await contract.methods.claimInheritance().send({ from: accounts[0] });
+        document.getElementById("willDetails").innerHTML += "<p style='color:green;'>✅ Will executed successfully!</p>";
+    } catch (error) {
+        document.getElementById("willDetails").innerHTML += "<p style='color:red;'>❌ Execution failed!</p>";
     }
+}
 
-    async function checkWill() {
-        if (!contract) return alert("Connect wallet first!");
-        
-        // Fake Will Data (Using Your Details)
-        let fakeWill = {
-            owner: "Praveen Kumar",
-            wallet: "0x9750E8A9670F6fEDD44F67930Dff74f7C7748fA0",
-            beneficiary: "0xABCD1234EF5678GH9012IJ3456KL7890MNOPQRST",  // Fake Beneficiary
-            assets: [
-                { type: "ETH", amount: "1.2 ETH" },
-                { type: "Token", amount: "300 USDT" },
-                { type: "NFT", amount: "CryptoPunk #404" }
-            ],
-            status: "Pending Execution"
-        };
-
-        let willMessage = `
-            👤 **Owner:** ${fakeWill.owner}
-            \n🔗 **Wallet:** ${fakeWill.wallet}
-            \n👤 **Beneficiary:** ${fakeWill.beneficiary}
-            \n💰 **Assets:**
-            \n- ${fakeWill.assets[0].amount}
-            \n- ${fakeWill.assets[1].amount}
-            \n- ${fakeWill.assets[2].amount}
-            \n✅ **Status:** ${fakeWill.status}
-        `;
-
-        alert(willMessage);
-    }
-
-    async function executeWill() {
-        if (!contract) return alert("Connect wallet first!");
-        
-        // Fake Execution Response
-        setTimeout(() => {
-            alert("✅ Will executed successfully! The assets have been securely transferred to the beneficiary.");
-        }, 2000); // Simulating a delay for execution
-    }
     </script>
 </body>
 </html>
