@@ -72,9 +72,9 @@
             animation: fadeIn 2s ease-in-out;
         }
 
-        /* Animated Button */
-        .connect-btn {
-            margin-top: 30px;
+        /* Buttons */
+        .button {
+            margin-top: 15px;
             padding: 12px 25px;
             font-size: 18px;
             background: linear-gradient(45deg, #6200ea, #bb86fc);
@@ -85,7 +85,7 @@
             transition: all 0.3s ease-in-out;
             box-shadow: 0 4px 15px rgba(187, 134, 252, 0.4);
         }
-        .connect-btn:hover {
+        .button:hover {
             background: linear-gradient(45deg, #bb86fc, #6200ea);
             box-shadow: 0 6px 20px rgba(187, 134, 252, 0.6);
         }
@@ -121,7 +121,6 @@
     </style>
 </head>
 <body>
-
     <!-- Navbar -->
     <div class="navbar">
         <h1>Digital Will - Web3</h1>
@@ -137,7 +136,9 @@
     <div class="hero">
         <h1>Secure Your Digital Legacy</h1>
         <p>Ensure your assets are seamlessly transferred with blockchain-powered Digital Will.</p>
-        <button class="connect-btn" onclick="connectWallet()">🔗 Connect Wallet</button>
+        <button class="button" onclick="connectWallet()">🔗 Connect Wallet</button>
+        <button class="button" onclick="checkWill()">📜 Check Will</button>
+        <button class="button" onclick="executeWill()">✅ Execute Will</button>
         <p id="status" style="margin-top: 15px; color: #bbb;">Status: Not connected</p>
     </div>
 
@@ -189,6 +190,5 @@
             }
         }
     </script>
-
 </body>
 </html>
